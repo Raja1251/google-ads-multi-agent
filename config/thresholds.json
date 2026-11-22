@@ -1,0 +1,126 @@
+{
+  "anomaly_rules": {
+    "zero_conversion_spend_cpa_multiplier": 1.5,
+    "min_zero_conversion_spend_threshold_usd": 30.0,
+    "cpa_spike_percentage_vs_7d_avg": 25.0,
+    "cpc_spike_percentage_vs_7d_avg": 30.0,
+    "roas_drop_percentage_vs_target": 25.0,
+    "roas_drop_percentage_vs_7d_avg": 20.0,
+    "budget_pacing_overspend_threshold_pct": 15.0,
+    "budget_pacing_underspend_threshold_pct": 30.0
+  },
+  "business_type_profiles": {
+    "ecommerce": {
+      "display_name": "E-Commerce & Retail",
+      "primary_metric": "ROAS",
+      "target_roas_default": 3.5,
+      "zero_conversion_spend_cpa_multiplier": 1.8,
+      "negative_keyword_disqualifiers": [
+        "diy",
+        "how to make",
+        "craft",
+        "broken",
+        "repair manual",
+        "wholesale distributor",
+        "jobs",
+        "salary",
+        "free download"
+      ]
+    },
+    "b2b_saas": {
+      "display_name": "B2B SaaS & Tech",
+      "primary_metric": "CPA",
+      "zero_conversion_spend_cpa_multiplier": 1.25,
+      "negative_keyword_disqualifiers": [
+        "jobs",
+        "salary",
+        "internship",
+        "glassdoor",
+        "course",
+        "github",
+        "source code",
+        "open source alternative",
+        "free download",
+        "torrent",
+        "crack"
+      ]
+    },
+    "local_service": {
+      "display_name": "Local & Emergency Services",
+      "primary_metric": "CPA",
+      "zero_conversion_spend_cpa_multiplier": 1.5,
+      "negative_keyword_disqualifiers": [
+        "diy",
+        "how to repair yourself",
+        "youtube video",
+        "training",
+        "trade school",
+        "parts catalog",
+        "jobs",
+        "apprenticeship"
+      ]
+    },
+    "lead_gen": {
+      "display_name": "Lead Generation & High-Ticket",
+      "primary_metric": "CPA",
+      "zero_conversion_spend_cpa_multiplier": 1.4,
+      "negative_keyword_disqualifiers": [
+        "login",
+        "portal",
+        "customer support number",
+        "careers",
+        "free government",
+        "grants",
+        "complaints",
+        "lawsuit"
+      ]
+    },
+    "mobile_app": {
+      "display_name": "Mobile Apps & Gaming",
+      "primary_metric": "CPA",
+      "zero_conversion_spend_cpa_multiplier": 2.0,
+      "negative_keyword_disqualifiers": [
+        "pc",
+        "desktop",
+        "windows",
+        "mac",
+        "emulator",
+        "apk mod",
+        "cheat code",
+        "unlimited coins"
+      ]
+    },
+    "info_product": {
+      "display_name": "Courses & Digital Products",
+      "primary_metric": "CPA",
+      "zero_conversion_spend_cpa_multiplier": 1.5,
+      "negative_keyword_disqualifiers": [
+        "free download",
+        "mega link",
+        "torrent",
+        "pirate",
+        "google drive link",
+        "reddit summary",
+        "pdf free"
+      ]
+    },
+    "healthcare": {
+      "display_name": "Healthcare & Clinics",
+      "primary_metric": "CPA",
+      "zero_conversion_spend_cpa_multiplier": 1.5,
+      "negative_keyword_disqualifiers": [
+        "symptoms",
+        "webmd",
+        "home remedies",
+        "free clinic",
+        "medical school",
+        "doctor salary",
+        "jobs"
+      ]
+    }
+  },
+  "lookback_windows": {
+    "audit_period": "YESTERDAY",
+    "baseline_period": "LAST_7_DAYS"
+  }
+}
