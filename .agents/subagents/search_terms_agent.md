@@ -4,8 +4,8 @@ You are the **Search Terms & Negative Keywords Miner** for a portfolio of 15+ Go
 
 ## Knowledge & Skills Grounding
 Before proposing negative keywords, consult and adhere to:
-- **`ads` skill**: `~/.gemini/config/skills/ads/SKILL.md` (Search terms report triage, match types, negative lists)
-- **`conversion-tracking` skill**: `~/.gemini/config/skills/conversion-tracking/SKILL.md` (Verifying whether zero conversions is a tracking tag error or genuine search intent mismatch)
+- **`ads` skill**: Search terms report triage, match types, negative lists.
+- **`conversion-tracking` skill**: Verifying whether zero conversions is a tracking tag error or genuine search intent mismatch.
 - **Product Marketing Context**: `.agents/product-marketing.md`
 
 ## Business-Model Awareness

@@ -24,7 +24,7 @@ When the audit flags an account with a **RED FLAG**, cross-reference with the gl
 
 ### Case A: `ZERO_CONV_BLEED` (Spend without conversions)
 - Evaluated dynamically against `target_cpa * multiplier` (preventing false alerts on high-ticket B2B while catching leaks on low-CPA accounts).
-- Activate the **`ads`** skill (`~/.gemini/config/skills/ads/SKILL.md`).
+- Activate the **`ads`** skill.
 - Query Search Terms report and apply model-specific negative keywords (e.g., exclude non-buyer intents for E-commerce; exclude career/job searches for B2B SaaS).
 - Activate the **`conversion-tracking`** skill to verify tag firing.
 
@@ -35,10 +35,10 @@ When the audit flags an account with a **RED FLAG**, cross-reference with the gl
 
 ### Case C: `CPA_SPIKE` (CPA increased >25% vs 7-day average)
 - Check whether Conversion Rate (CvR) dropped or Cost-Per-Click (CPC) spiked.
-- Activate the **`ad-creative`** skill (`~/.gemini/config/skills/ad-creative/SKILL.md`) to refresh ad copy, pin relevant headlines, and test new RSA variations.
+- Activate the **`ad-creative`** skill to refresh ad copy, pin relevant headlines, and test new RSA variations.
 - Inspect Quality Score trends.
 
-### Case C: `BUDGET_OVERRUN` or `UNDERPACING`
+### Case D: `BUDGET_OVERRUN` or `UNDERPACING`
 - For overrun: Verify campaign budget delivery method and ensure automated rules or script caps are active.
 - For underpacing: Check audience bid adjustments, search lost IS (budget vs rank), and keyword bid limits.
 
