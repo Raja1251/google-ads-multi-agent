@@ -25,6 +25,7 @@ from scripts.audit_accounts import (
     fetch_live_google_ads_data,
     generate_sample_data,
     validate_date_str,
+    get_currency_symbol,
     CONFIG_DIR,
     REPORTS_DIR,
     CREDS_FILE,
@@ -38,19 +39,21 @@ def sanitize_text(text: str) -> str:
     return str(text).replace("\r", " ").replace("\n", " ").replace("[", "(").replace("]", ")").strip()
 
 
-def generate_rsa_copy_for_business(business_type: str, account_name: str) -> dict:
+def generate_rsa_copy_for_business(business_type: str, account_name: str, currency: str = "USD") -> dict:
     """
     Generates industry-grounded RSA headlines (<=30 chars) and descriptions (<=90 chars)
-    free of AI clichés, with pinning recommendations.
+    free of AI clichés, with pinning recommendations and local currency anchors.
     """
     brand = sanitize_text(account_name.split("-")[0].strip())
     b_type = (business_type or "general").lower()
+    curr_upper = (currency or "USD").upper()
 
     if b_type == "ecommerce":
+        shipping_hook = "Free Shipping Over ₹999" if curr_upper == "INR" else ("Free Shipping Over £40" if curr_upper == "GBP" else "Free 2-Day Shipping Over $50")
         return {
             "headlines": [
                 f"{brand} Official Store",          # Pin 1
-                "Free 2-Day Shipping Over $50",     # Pin 2
+                shipping_hook,                      # Pin 2
                 "30-Day Money Back Guarantee",
                 "Shop New 2026 Collection",
                 "Rated 4.9★ by Customers",
@@ -188,16 +191,17 @@ def generate_staged_action_plan(results: list, output_path: Path, date_str: str,
             is_overrun = any("OVERRUN" in a for a in r["anomalies"])
             suggested_budget = round(r["daily_budget"] * 1.20, 2) if is_overrun else round(r["daily_budget"] * 0.85, 2)
             b_type = r.get("business_type", "general")
+            curr = get_currency_symbol(r.get("currency", "USD"))
             
-            target_desc = f"Target ROAS: {r['target_roas']:.2f}x (Yesterday: {r['roas']:.2f}x)" if r.get("primary_metric") == "ROAS" else f"Target CPA: ${r['target_cpa']:.2f} (Yesterday: ${r['cpa']:.2f})"
+            target_desc = f"Target ROAS: {r['target_roas']:.2f}x (Yesterday: {r['roas']:.2f}x)" if r.get("primary_metric") == "ROAS" else f"Target CPA: {curr}{r['target_cpa']:,.2f} (Yesterday: {curr}{r['cpa']:,.2f})"
             
             lines.extend([
-                f"### Account: **{r['account_name']}** (`{r['account_id']}`) — `{b_type.upper()}`",
-                f"- **Yesterday Spend**: ${r['yesterday_spend']:.2f} (Target Daily Budget: ${r['daily_budget']:.2f})",
+                f"### Account: **{r['account_name']}** (`{r['account_id']}`) — `{b_type.upper()}` [{r.get('currency', 'USD')}]",
+                f"- **Yesterday Spend**: {curr}{r['yesterday_spend']:,.2f} (Target Daily Budget: {curr}{r['daily_budget']:,.2f})",
                 f"- **Efficiency Context**: {target_desc}",
                 f"- **Detected Issue**: {flags}",
                 f"- **Staged Action**:",
-                f"  - [ ] **Approve Budget Adjustment**: Change daily budget to **${suggested_budget:.2f}**/day",
+                f"  - [ ] **Approve Budget Adjustment**: Change daily budget to **{curr}{suggested_budget:,.2f}**/day",
                 f"  - [ ] **Approve Bid Optimization**: Calibrate bid ceilings based on `{r.get('primary_metric', 'CPA')}` goals.",
                 "",
             ])
@@ -214,10 +218,11 @@ def generate_staged_action_plan(results: list, output_path: Path, date_str: str,
             b_prof = profiles.get(b_type, {})
             disqualifiers = b_prof.get("negative_keyword_disqualifiers", ["jobs", "salary", "free", "diy", "pdf download"])
             
+            curr = get_currency_symbol(r.get("currency", "USD"))
             root_term = r['account_name'].split("-")[0].strip().lower()
             lines.extend([
-                f"### Account: **{r['account_name']}** (`{r['account_id']}`) — `{b_type.upper()}`",
-                f"- **Yesterday Spend**: ${r['yesterday_spend']:.2f} with **0 conversions** (Target CPA: ${r['target_cpa']:.2f})",
+                f"### Account: **{r['account_name']}** (`{r['account_id']}`) — `{b_type.upper()}` [{r.get('currency', 'USD')}]",
+                f"- **Yesterday Spend**: {curr}{r['yesterday_spend']:,.2f} with **0 conversions** (Target CPA: {curr}{r['target_cpa']:,.2f})",
                 f"- **Business Model**: `{b_type}` (Disqualifies intent mismatches without hurting buyer traffic)",
                 f"- **Staged Negative Keywords (Copy-Paste Ready)**:",
                 "  ```text",
@@ -240,11 +245,12 @@ def generate_staged_action_plan(results: list, output_path: Path, date_str: str,
     if creative_issues:
         for r in creative_issues:
             b_type = r.get("business_type", "general")
-            copy_pack = generate_rsa_copy_for_business(b_type, r["account_name"])
+            curr_code = r.get("currency", "USD")
+            copy_pack = generate_rsa_copy_for_business(b_type, r["account_name"], curr_code)
             issue_desc = "CPA Spike (+60% vs baseline)" if any("CPA_SPIKE" in a for a in r["anomalies"]) else f"ROAS Drop ({r['roas']:.2f}x vs target {r['target_roas']:.2f}x)"
             
             lines.extend([
-                f"### Account: **{r['account_name']}** (`{r['account_id']}`) — `{b_type.upper()}`",
+                f"### Account: **{r['account_name']}** (`{r['account_id']}`) — `{b_type.upper()}` [{curr_code}]",
                 f"- **Trigger Anomaly**: {issue_desc}",
                 f"- **Strategic Focus**: {copy_pack['focus']}",
                 f"- **Staged RSA Ad Copy (Model-Specific Refresh)**:",

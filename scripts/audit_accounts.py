@@ -24,6 +24,25 @@ CONFIG_DIR = BASE_DIR / "config"
 REPORTS_DIR = BASE_DIR / "reports"
 CREDS_FILE = BASE_DIR / "google-ads.yaml"
 
+CURRENCY_SYMBOLS = {
+    "INR": "₹",
+    "USD": "$",
+    "EUR": "€",
+    "GBP": "£",
+    "AED": "AED ",
+    "CAD": "CA$",
+    "AUD": "A$",
+    "SGD": "S$",
+    "JPY": "¥",
+}
+
+
+def get_currency_symbol(curr_code: str) -> str:
+    """Returns currency symbol for given ISO currency code."""
+    if not curr_code:
+        return "$"
+    return CURRENCY_SYMBOLS.get(str(curr_code).upper(), f"{curr_code} ")
+
 
 def validate_date_str(date_str: str) -> str:
     """Validates date string format strictly to prevent path traversal (YYYY-MM-DD)."""
@@ -142,10 +161,13 @@ def generate_sample_data(accounts_config: dict, thresholds: dict) -> list:
         impressions = round(spend * random.uniform(25, 45))
         clicks = round(impressions * random.uniform(0.02, 0.045))
         
+        curr_code = acc.get("currency", "USD")
+        curr_sym = get_currency_symbol(curr_code)
+
         # Evaluate anomaly rules
         anomalies = []
         if conversions == 0 and spend >= zero_conv_limit:
-            anomalies.append(f"ZERO_CONV_BLEED (${spend:.2f} spent with 0 conv; dynamic limit ${zero_conv_limit:.2f})")
+            anomalies.append(f"ZERO_CONV_BLEED ({curr_sym}{spend:.2f} spent with 0 conv; dynamic limit {curr_sym}{zero_conv_limit:.2f})")
             
         if conversions > 0 and baseline_cpa > 0:
             cpa_diff = ((cpa - baseline_cpa) / baseline_cpa) * 100
@@ -178,6 +200,7 @@ def generate_sample_data(accounts_config: dict, thresholds: dict) -> list:
             "baseline_7d_cpa": round(baseline_cpa, 2),
             "roas": roas,
             "target_roas": target_roas,
+            "currency": curr_code,
             "clicks": clicks,
             "impressions": impressions,
             "anomalies": anomalies,
@@ -240,6 +263,8 @@ def fetch_live_google_ads_data(creds_path: Path, accounts_config: dict, threshol
         name = acc.get("name")
         b_type = acc.get("business_type", "general")
         p_metric = acc.get("primary_metric", "CPA")
+        curr_code = acc.get("currency", "USD")
+        curr_sym = get_currency_symbol(curr_code)
         target_cpa = float(acc.get("target_cpa", 50.0))
         target_roas = float(acc.get("target_roas")) if acc.get("target_roas") else None
         daily_budget = float(acc.get("daily_budget", 150.0))
@@ -285,7 +310,7 @@ def fetch_live_google_ads_data(creds_path: Path, accounts_config: dict, threshol
             # Anomaly rules evaluation
             anomalies = []
             if conversions == 0 and spend >= zero_conv_limit:
-                anomalies.append(f"ZERO_CONV_BLEED (${spend:.2f} spent with 0 conv; dynamic limit ${zero_conv_limit:.2f})")
+                anomalies.append(f"ZERO_CONV_BLEED ({curr_sym}{spend:.2f} spent with 0 conv; dynamic limit {curr_sym}{zero_conv_limit:.2f})")
             if conversions > 0 and baseline_7d_cpa > 0:
                 diff = ((cpa - baseline_7d_cpa) / baseline_7d_cpa) * 100
                 if diff >= cpa_spike_pct:
@@ -314,6 +339,7 @@ def fetch_live_google_ads_data(creds_path: Path, accounts_config: dict, threshol
                 "baseline_7d_cpa": round(baseline_7d_cpa, 2),
                 "roas": round(roas, 2),
                 "target_roas": target_roas,
+                "currency": curr_code,
                 "clicks": clicks,
                 "impressions": impressions,
                 "anomalies": anomalies,
@@ -352,26 +378,28 @@ def export_csv(results: list, output_path: Path):
     with open(output_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow([
-            "Account_ID", "Account_Name", "Business_Type", "Primary_Metric", "Status",
+            "Account_ID", "Account_Name", "Business_Type", "Primary_Metric", "Currency", "Status",
             "Yesterday_Spend", "Daily_Budget", "Conversions", "CPA", "Target_CPA",
             "ROAS", "Target_ROAS", "7D_Avg_CPA", "Clicks", "Impressions", "Anomalies"
         ])
         for r in results:
             target_roas_str = f"{r['target_roas']:.2f}x" if r.get("target_roas") else "N/A"
+            curr_sym = get_currency_symbol(r.get("currency", "USD"))
             writer.writerow([
                 r["account_id"],
                 r["account_name"],
                 r.get("business_type", "general"),
                 r.get("primary_metric", "CPA"),
+                r.get("currency", "USD"),
                 r["status"],
-                f"${r['yesterday_spend']:.2f}",
-                f"${r['daily_budget']:.2f}",
+                f"{curr_sym}{r['yesterday_spend']:,.2f}",
+                f"{curr_sym}{r['daily_budget']:,.2f}",
                 r["conversions"],
-                f"${r['cpa']:.2f}",
-                f"${r['target_cpa']:.2f}",
+                f"{curr_sym}{r['cpa']:,.2f}",
+                f"{curr_sym}{r['target_cpa']:,.2f}",
                 f"{r['roas']:.2f}x",
                 target_roas_str,
-                f"${r['baseline_7d_cpa']:.2f}",
+                f"{curr_sym}{r['baseline_7d_cpa']:,.2f}",
                 r["clicks"],
                 r["impressions"],
                 " | ".join(r["anomalies"]) if r["anomalies"] else "None"
@@ -391,34 +419,34 @@ def export_markdown_summary(results: list, output_path: Path, date_str: str, mod
 
     md_lines = [
         f"# Google Ads Multi-Account Executive Audit - {date_str}",
-        f"\n**Execution Mode**: `{mode}` | **Audited Accounts**: {len(results)} accounts (Universal Cross-Industry)\n",
+        f"\n**Execution Mode**: `{mode}` | **Audited Accounts**: {len(results)} accounts (Universal Cross-Industry & Multi-Currency)\n",
         "## Key Performance Summary",
-        f"- **Total Portfolio Spend**: `${total_spend:,.2f}`",
         f"- **Total Portfolio Conversions**: `{total_conv:,.1f}`",
-        f"- **Blended CPA**: `${overall_cpa:.2f}`",
         f"- **Accounts Requiring Attention**: `{len(red_flag_accounts)}` red flags, `{len(error_accounts)}` errors\n",
     ]
 
     if red_flag_accounts:
         md_lines.append("## 🚨 Immediate Action Required (Red Flags)")
-        md_lines.append("| Account ID | Account Name | Model | Spend | Conv | Target Metric | Anomaly Detected |")
-        md_lines.append("| :--- | :--- | :--- | :--- | :--- | :--- | :--- |")
+        md_lines.append("| Account ID | Account Name | Model | Curr | Spend | Conv | Target Metric | Anomaly Detected |")
+        md_lines.append("| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |")
         for r in red_flag_accounts:
             flags = "<br>".join([f"⚠️ {a}" for a in r["anomalies"]])
-            target_str = f"ROAS: {r['roas']:.2f}x (Target {r['target_roas']:.2f}x)" if r.get("primary_metric") == "ROAS" else f"CPA: ${r['cpa']:.2f} (Target ${r['target_cpa']:.2f})"
+            curr_sym = get_currency_symbol(r.get("currency", "USD"))
+            target_str = f"ROAS: {r['roas']:.2f}x (Target {r['target_roas']:.2f}x)" if r.get("primary_metric") == "ROAS" else f"CPA: {curr_sym}{r['cpa']:,.2f} (Target {curr_sym}{r['target_cpa']:,.2f})"
             md_lines.append(
-                f"| `{r['account_id']}` | **{r['account_name']}** | `{r.get('business_type', 'general')}` | ${r['yesterday_spend']:.2f} | {r['conversions']} | {target_str} | {flags} |"
+                f"| `{r['account_id']}` | **{r['account_name']}** | `{r.get('business_type', 'general')}` | `{r.get('currency', 'USD')}` | {curr_sym}{r['yesterday_spend']:,.2f} | {r['conversions']} | {target_str} | {flags} |"
             )
         md_lines.append("")
 
     md_lines.append("## 📊 Full Portfolio Breakdown")
-    md_lines.append("| Account | Model | Status | Spend / Budget | Conv | CPA | ROAS | Primary Goal |")
-    md_lines.append("| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |")
+    md_lines.append("| Account | Model | Curr | Status | Spend / Budget | Conv | CPA | ROAS | Primary Goal |")
+    md_lines.append("| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |")
     for r in results:
         status_badge = "🔴 Red Flag" if r["status"] == "RED FLAG" else ("🟢 Healthy" if r["status"] == "HEALTHY" else "⚠️ Error")
-        goal_str = f"Target ROAS: {r['target_roas']:.2f}x" if r.get("primary_metric") == "ROAS" else f"Target CPA: ${r['target_cpa']:.2f}"
+        curr_sym = get_currency_symbol(r.get("currency", "USD"))
+        goal_str = f"Target ROAS: {r['target_roas']:.2f}x" if r.get("primary_metric") == "ROAS" else f"Target CPA: {curr_sym}{r['target_cpa']:,.2f}"
         md_lines.append(
-            f"| **{r['account_name']}** (`{r['account_id']}`) | `{r.get('business_type', 'general')}` | {status_badge} | ${r['yesterday_spend']:.2f} / ${r['daily_budget']:.2f} | {r['conversions']} | ${r['cpa']:.2f} | {r['roas']:.2f}x | {goal_str} |"
+            f"| **{r['account_name']}** (`{r['account_id']}`) | `{r.get('business_type', 'general')}` | `{r.get('currency', 'USD')}` | {status_badge} | {curr_sym}{r['yesterday_spend']:,.2f} / {curr_sym}{r['daily_budget']:,.2f} | {r['conversions']} | {curr_sym}{r['cpa']:,.2f} | {r['roas']:.2f}x | {goal_str} |"
         )
 
     md_lines.append("\n## 💡 Tailored Marketing Recommendations by Business Type")

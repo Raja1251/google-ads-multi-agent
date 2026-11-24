@@ -3,37 +3,37 @@
   "accounts": [
     {
       "id": "111-222-0001",
-      "name": "LuxeStride - D2C Footwear & Apparel",
+      "name": "LuxeStride - Mumbai D2C Footwear",
       "business_type": "ecommerce",
       "primary_metric": "ROAS",
       "target_roas": 3.8,
-      "target_cpa": 45.0,
-      "daily_budget": 350.0,
-      "currency": "USD"
+      "target_cpa": 450.0,
+      "daily_budget": 25000.0,
+      "currency": "INR"
     },
     {
       "id": "111-222-0002",
-      "name": "CloudSecure - B2B Cybersecurity SaaS",
+      "name": "CloudSecure - Bangalore B2B SaaS",
       "business_type": "b2b_saas",
       "primary_metric": "CPA",
       "target_roas": null,
-      "target_cpa": 175.0,
-      "daily_budget": 300.0,
-      "currency": "USD"
+      "target_cpa": 4500.0,
+      "daily_budget": 20000.0,
+      "currency": "INR"
     },
     {
       "id": "111-222-0003",
-      "name": "Apex Metro 24/7 HVAC & Plumbing",
+      "name": "Apex Metro 24/7 HVAC - Delhi NCR",
       "business_type": "local_service",
       "primary_metric": "CPA",
       "target_roas": null,
-      "target_cpa": 85.0,
-      "daily_budget": 200.0,
-      "currency": "USD"
+      "target_cpa": 1200.0,
+      "daily_budget": 8000.0,
+      "currency": "INR"
     },
     {
       "id": "111-222-0004",
-      "name": "ZenPulse - Mobile Meditation App",
+      "name": "ZenPulse - Mobile Meditation App (US)",
       "business_type": "mobile_app",
       "primary_metric": "CPA",
       "target_roas": null,
@@ -43,7 +43,7 @@
     },
     {
       "id": "111-222-0005",
-      "name": "Summit Commercial Real Estate Lending",
+      "name": "Summit Commercial Lending (US)",
       "business_type": "lead_gen",
       "primary_metric": "CPA",
       "target_roas": null,
@@ -53,17 +53,17 @@
     },
     {
       "id": "111-222-0006",
-      "name": "GourmetBlend - Coffee Subscription E-comm",
+      "name": "ChaiCraft - Organic Tea D2C India",
       "business_type": "ecommerce",
       "primary_metric": "ROAS",
       "target_roas": 4.2,
-      "target_cpa": 30.0,
-      "daily_budget": 220.0,
-      "currency": "USD"
+      "target_cpa": 320.0,
+      "daily_budget": 15000.0,
+      "currency": "INR"
     },
     {
       "id": "111-222-0007",
-      "name": "FleetTrack - Logistics Fleet IoT Platform",
+      "name": "FleetTrack - Logistics Fleet IoT (US)",
       "business_type": "b2b_saas",
       "primary_metric": "CPA",
       "target_roas": null,
@@ -73,27 +73,27 @@
     },
     {
       "id": "111-222-0008",
-      "name": "EliteSmile - Orthodontics & Dental Implants",
+      "name": "EliteSmile - Dental Implants (UK)",
       "business_type": "healthcare",
       "primary_metric": "CPA",
       "target_roas": null,
-      "target_cpa": 90.0,
-      "daily_budget": 150.0,
-      "currency": "USD"
+      "target_cpa": 75.0,
+      "daily_budget": 120.0,
+      "currency": "GBP"
     },
     {
       "id": "111-222-0009",
-      "name": "FinEdge - Wealth & Retirement Planning",
+      "name": "FinEdge - Wealth & Retirement (UK)",
       "business_type": "lead_gen",
       "primary_metric": "CPA",
       "target_roas": null,
-      "target_cpa": 95.0,
-      "daily_budget": 140.0,
-      "currency": "USD"
+      "target_cpa": 80.0,
+      "daily_budget": 110.0,
+      "currency": "GBP"
     },
     {
       "id": "111-222-0010",
-      "name": "SpeedyLock - 24/7 Mobile Locksmith",
+      "name": "SpeedyLock - 24/7 Mobile Locksmith (US)",
       "business_type": "local_service",
       "primary_metric": "CPA",
       "target_roas": null,
@@ -107,13 +107,13 @@
       "business_type": "info_product",
       "primary_metric": "CPA",
       "target_roas": 2.5,
-      "target_cpa": 25.0,
-      "daily_budget": 110.0,
-      "currency": "USD"
+      "target_cpa": 1800.0,
+      "daily_budget": 6000.0,
+      "currency": "INR"
     },
     {
       "id": "111-222-0012",
-      "name": "CleanPro - Commercial Janitorial Services",
+      "name": "CleanPro - Commercial Janitorial (US)",
       "business_type": "local_service",
       "primary_metric": "CPA",
       "target_roas": null,
@@ -123,17 +123,17 @@
     },
     {
       "id": "111-222-0013",
-      "name": "AeroGlow - Skincare & Beauty DTC",
+      "name": "AeroGlow - Skincare DTC (EU)",
       "business_type": "ecommerce",
       "primary_metric": "ROAS",
       "target_roas": 3.5,
-      "target_cpa": 38.0,
-      "daily_budget": 200.0,
-      "currency": "USD"
+      "target_cpa": 32.0,
+      "daily_budget": 180.0,
+      "currency": "EUR"
     },
     {
       "id": "111-222-0014",
-      "name": "PixelQuest - Mobile RPG Game Installs",
+      "name": "PixelQuest - Mobile RPG Game (Global)",
       "business_type": "mobile_app",
       "primary_metric": "CPA",
       "target_roas": null,
@@ -143,7 +143,7 @@
     },
     {
       "id": "111-222-0015",
-      "name": "DevPulse - API Monitoring Developer Tool",
+      "name": "DevPulse - API Monitoring Tool (US)",
       "business_type": "b2b_saas",
       "primary_metric": "CPA",
       "target_roas": null,
