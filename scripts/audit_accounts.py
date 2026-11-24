@@ -38,10 +38,11 @@ CURRENCY_SYMBOLS = {
 
 
 def get_currency_symbol(curr_code: str) -> str:
-    """Returns currency symbol for given ISO currency code."""
-    if not curr_code:
+    """Returns currency symbol for given ISO currency code, strictly validating against injection."""
+    if not curr_code or not re.match(r"^[A-Za-z]{3}$", str(curr_code).strip()):
         return "$"
-    return CURRENCY_SYMBOLS.get(str(curr_code).upper(), f"{curr_code} ")
+    cleaned = str(curr_code).strip().upper()
+    return CURRENCY_SYMBOLS.get(cleaned, f"{cleaned} ")
 
 
 def validate_date_str(date_str: str) -> str:

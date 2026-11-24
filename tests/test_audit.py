@@ -11,6 +11,7 @@ from scripts.audit_accounts import (
     validate_date_str,
     generate_sample_data,
     load_json,
+    get_currency_symbol,
     CONFIG_DIR,
     REPORTS_DIR,
     export_csv,
@@ -89,6 +90,19 @@ class TestMultiBusinessLogic(unittest.TestCase):
         self.assertNotIn("\r", cleaned)
         self.assertNotIn("[", cleaned)
         self.assertNotIn("]", cleaned)
+
+    def test_currency_symbol_injection_defense(self):
+        self.assertEqual(get_currency_symbol("INR"), "₹")
+        self.assertEqual(get_currency_symbol("USD"), "$")
+        self.assertEqual(get_currency_symbol("GBP"), "£")
+        self.assertEqual(get_currency_symbol("EUR"), "€")
+        # Test malicious injection payload in currency code
+        malicious = "USD\n- [x] Malicious Action"
+        sanitized = get_currency_symbol(malicious)
+        self.assertNotIn("\n", sanitized)
+        self.assertNotIn("[", sanitized)
+        self.assertNotIn("]", sanitized)
+        self.assertEqual(sanitized, "$")
 
 
 if __name__ == "__main__":
